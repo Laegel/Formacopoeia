@@ -1,0 +1,30 @@
+<div class="wrap">
+    <h1 class="wp-heading-inline">{{translate 'formsList'}}</h1>
+    <table class="wp-list-table widefat fixed striped posts">
+        <thead>
+            <tr>
+                <td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>
+                <th>{{translate 'title'}}</th>
+           </tr>
+        </thead>
+        <tbody id="the-list">
+            {{#each forms}}
+                <tr>
+                    <td></td>
+                    <td>
+                        <a href="{{link}}">{{title}}</a>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-2">Select All</label><input id="cb-select-all-2" type="checkbox"></td>
+                <th scope="col" class="manage-column column-author">{{translate 'title'}}</th>
+            </tr>
+        </tfoot>
+
+    </table>
+    Pages: {{pages}}
+</div>

@@ -1,0 +1,50 @@
+<template>
+    <div class="fc-input" data-id="{{id}}">
+        <div class="rows">
+            {{#each2 value}}
+                <div data-row="{{$row}}">
+                    <input data-type="key" type="text" value="{{data.key}}"><!--
+                    --><input data-type="value" type="text" value="{{data.value}}"><!--
+                    --><button class="fc-assoc-remove">-</button>
+                </div> 
+            {{/each2}}
+        </div>
+        <div><input type="text" id="fc-assoc-key"><input type="text" id="fc-assoc-value"><button id="fc-assoc-add">+</button></div> 
+    </div>
+</template>
+
+<script>
+{
+    unbox: function(string) {
+        return string ? JSON.parse(string) : [];
+    },
+    box: function(values) {
+        return values ? JSON.stringify(values) : '[]';
+    },
+    onInit: function(values) {
+        const self = this;
+        select('#fc-assoc-add', this.wrapper).on('click', function() {
+            const newItem = {
+                key: select('#fc-assoc-key').value,
+                value: select('#fc-assoc-value').value
+            };
+            values.push(newItem);
+            const event = new CustomEvent('update', {detail: {value: values, refresh: true}});
+            self.wrapper.dispatchEvent(event);
+        });
+
+        selectAll('.fc-assoc-remove', this.wrapper).on('click', function() {
+            values.splice(this.closest('div').dataset.row, 1);
+            const event = new CustomEvent('update', {detail: {value: values, refresh: true}});
+            self.wrapper.dispatchEvent(event);
+        });
+
+        selectAll('.rows input', this.wrapper).on('input', function() {
+            values[this.closest('div').dataset.row][this.dataset.type] = this.value;
+            
+            const event = new CustomEvent('update', {detail: {value: values}});
+            self.wrapper.dispatchEvent(event);
+        });
+    }
+}
+</script>

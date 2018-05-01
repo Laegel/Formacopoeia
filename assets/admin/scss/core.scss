@@ -1,0 +1,40 @@
+$background: #f5f5f5;
+$color: #555;
+$border-bottom-color: #f5f5f5;
+
+.fc {
+  &-tab.active {
+    background: $background;
+    color: $color;
+    border-bottom-color: $border-bottom-color;
+  }
+    
+  &-input {
+    width: 100%;  
+  }
+  
+  &-property-row {
+    padding: 10px;
+  }
+
+  &-iframe {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  &-panel-bottom {
+    padding: 10px;
+    clear: both;
+    border-top: 1px solid #ddd;
+    background: $background;
+  }
+
+  &-add-field {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+property-wrapper {
+  display: block;
+}
