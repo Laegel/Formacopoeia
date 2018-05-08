@@ -1,7 +1,46 @@
-test: This is a test
-title: Title
+main:
+  title: Title
+  delete: Delete
+  save: Save
+  publish: Publish
+  active: Active
+menu:
+  list: Forms
+  edit: Create form
 formsList: Your forms
-formList: Forms
-formEdit: Create form
-createTitle: Create form
-updateTitle: Update form
+update:
+  title: Update form
+create:
+  title: Create form
+editor:
+  content: Build your form
+  classes: Classes to add to your form
+  theme: Select a theme
+  reset: Reset sandbox
+redirection: Link to redirect to
+pageReload: Reload the page
+fieldProperties: Field properties
+tabs:
+  editor: Editor
+  options: Options
+  behaviours: Behaviours
+behaviours:
+  title: Behaviours
+categories:
+  default: Default
+properties:
+  name: Name
+  label: Label
+  class: Class
+  placeholder: Placeholder
+  required: Required
+  extensions: File extensions
+fields:
+  email: Email
+  select: Select
+  submit: Submit
+  checkbox: Checkbox
+  text: Text
+  radio: Radio
+  textarea: Textarea
+  file: File

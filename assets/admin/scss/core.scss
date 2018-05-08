@@ -8,6 +8,27 @@ $border-bottom-color: #f5f5f5;
     color: $color;
     border-bottom-color: $border-bottom-color;
   }
+  
+  &-tab-content {
+    .container {
+      padding: 10px;
+      
+      input[type="text"], select {
+        width: 100%;
+      }
+    }
+  }
+  
+  &-context {
+    .dashicons {
+      width: auto;
+    }
+    
+    .wp-switch-editor {
+      float: none !important;
+      display: inline-block;
+    }
+  }
     
   &-input {
     width: 100%;  
@@ -18,7 +39,9 @@ $border-bottom-color: #f5f5f5;
   }
 
   &-iframe {
-    width: 100%;
+    display: block;
+    margin: auto;
+    width: 80%;
     box-sizing: border-box;
   }
   
@@ -32,9 +55,39 @@ $border-bottom-color: #f5f5f5;
   &-add-field {
     width: 100%;
     text-align: center;
+    padding: 10px !important;
+    height: auto !important;
+    font-size: 2em !important;
+  }  
+  
+  &-category-container {
+    display: none;
   }
+  
+  &-categories {
+    border-bottom: 1px solid $border-bottom-color;
+  }
+  
+  &-new-field {
+  margin: 4px;
+  display: inline-block;
+  .fc-preview {
+    border: 2px solid;
+    padding: 3px;
+    width: 60px;
+    overflow: hidden;
+    height: 60px;
+    border-radius: 2px;
+  }
+}
 }
 
 property-wrapper {
   display: block;
+  
+  &[data-property="associative"] {
+    .fc-input input {
+      width: calc(50% - 20px);
+    }
+  }
 }

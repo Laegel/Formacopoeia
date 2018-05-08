@@ -4,8 +4,40 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e2db55867482dffc0567117f779c807a",
+    "content-hash": "dd9604d31d50b016f297ff6fbf4d729f",
     "packages": [
+        {
+            "name": "laegel/wp-plugin-maker",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Laegel/wp-plugin-maker.git",
+                "reference": "0f31b1fe6f33be722b9b17735e0204a256362db9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Laegel/wp-plugin-maker/zipball/0f31b1fe6f33be722b9b17735e0204a256362db9",
+                "reference": "0f31b1fe6f33be722b9b17735e0204a256362db9",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WP_Plugin_Maker\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Laegel",
+                    "email": "valentin.chouaf@laposte.net"
+                }
+            ],
+            "time": "2018-05-04T08:17:49+00:00"
+        },
         {
             "name": "sunra/php-simple-html-dom-parser",
             "version": "v1.5.2",
@@ -437,35 +469,6 @@
                 "resource"
             ],
             "time": "2015-07-11T10:22:48+00:00"
-        },
-        {
-            "name": "laegel/wp-plugin-maker-cli",
-            "version": "0.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Laegel/wp-plugin-maker-cli.git",
-                "reference": "d72c50a61ddc940fcbdd4c29382480f411ee21b7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Laegel/wp-plugin-maker-cli/zipball/d72c50a61ddc940fcbdd4c29382480f411ee21b7",
-                "reference": "d72c50a61ddc940fcbdd4c29382480f411ee21b7",
-                "shasum": ""
-            },
-            "require": {
-                "jasonlewis/resource-watcher": "^1.2",
-                "php": "^5.4",
-                "vtardia/cli-parser": "^1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "WP_Plugin_Maker_CLI\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "description": "wp-plugin-maker CLI",
-            "time": "2018-04-08T14:21:06+00:00"
         },
         {
             "name": "paragonie/random_compat",

@@ -6,10 +6,11 @@ use Formacopoeia\Front\Form_Controller as Front_Form;
 class Main_Controller extends \WP_Plugin_Maker\Controller {
 
     public static function enqueue_scripts() {
-        wp_enqueue_script('light-query', WP_PLUGIN_URL . '/formacopoeia/assets/libs/light-query.js');
-        wp_enqueue_script('handlebars', WP_PLUGIN_URL . '/formacopoeia/assets/libs/handlebars.min-latest.js');
-        wp_enqueue_script('handlebars-helpers', WP_PLUGIN_URL . '/formacopoeia/assets/libs/handlebars-helpers.js', ['handlebars']);
-        wp_enqueue_script('formacopoeia-renderer', WP_PLUGIN_URL . '/formacopoeia/assets/both/renderer.js');
+        wp_enqueue_script('fc-light-query', WP_PLUGIN_URL . '/formacopoeia/assets/libs/light-query.js');
+        wp_enqueue_script('fc-utils', WP_PLUGIN_URL . '/formacopoeia/assets/libs/utils.js');
+        wp_enqueue_script('fc-handlebars', WP_PLUGIN_URL . '/formacopoeia/assets/libs/handlebars.min-latest.js');
+        wp_enqueue_script('fc-handlebars-helpers', WP_PLUGIN_URL . '/formacopoeia/assets/libs/handlebars-helpers.js', ['handlebars']);
+        wp_enqueue_script('fc-renderer', WP_PLUGIN_URL . '/formacopoeia/assets/both/renderer.js');
     }
 
     public static function action_init() {
@@ -25,6 +26,9 @@ class Main_Controller extends \WP_Plugin_Maker\Controller {
         if (isset($attributes['id'])) {
             $form = Form_Controller::get_by_id($attributes['id']);
             $fields = $form->get_fields();
+        }
+        if (!isset($form->ID)) {
+            return;
         }
         
         return Front_Form::render_form_slot($form);

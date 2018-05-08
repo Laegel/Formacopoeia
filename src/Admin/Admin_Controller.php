@@ -1,22 +1,20 @@
 <?php
 namespace Formacopoeia\Admin;
 
-use \Formacopoeia\All\Template2_Controller;
-use \Formacopoeia\All\Translate_Controller;
+use \Formacopoeia\Templating\Template_Controller;
 use \Formacopoeia\All\Main_Controller;
+use \Formacopoeia\Translations\Translator;
 
 class Admin_Controller extends \WP_Plugin_Maker\Controller {
 
     public static function action_init() {
-        Translate_Controller::init();
-        Template2_Controller::init();
+        Translator::init();
+        Template_Controller::init();
         Main_Controller::enqueue_scripts();
 
         wp_enqueue_script('fc-renderer', WP_PLUGIN_URL . '/formacopoeia/assets/both/renderer.js');
         add_thickbox();
     }
-
-    // Admin enqueue script filter to add
 
     public static function add_menu_page($options) {
         call_user_func_array('add_menu_page', self::resolve_args($options));

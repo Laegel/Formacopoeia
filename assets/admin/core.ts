@@ -6,13 +6,23 @@ domReady(function() {
 
     tabs.forEach(tab => {
         const object = formacopoeia.components[tab.dataset.tab];
+        let data = {};
         if (object && object.onInit) {
-            object.onInit();
+            data = object.onInit();
         }
+        data['$tab'] = object;
+        const handlebarsTemplate = Handlebars.compile(select('[data-template-tab="' + tab.dataset.tab + '"]').innerHTML);
+
+        const template = document.createElement('script');
+        template.dataset.templateCache = tab.dataset.tab;
+        template.setAttribute('type', 'text/x-handlebars/template');
+        template.innerHTML = handlebarsTemplate(data);
+        document.body.appendChild(template);
     });
 
     tabs.on('click', function(e) {
         e.preventDefault();
+        emptySidePanel();
         const activeTab = select('.fc-tab.active');
         if (activeTab) {
             activeTab.classList.remove('active');
@@ -23,7 +33,12 @@ domReady(function() {
         this.classList.add('active');
         const tab = this.dataset.tab;
         const object = formacopoeia.components[tab];
-        container.innerHTML = select('template[data-tab="' + tab + '"]').innerHTML;
+        const template = select('[data-template-cache="' + tab + '"]');
+        
+        const handlebarsTemplate = Handlebars.compile(template.innerHTML);
+
+        container.innerHTML = handlebarsTemplate();
+
         if (object && object.onActive) {
             object.onActive();
         }
@@ -32,11 +47,10 @@ domReady(function() {
 
     saveButton.on('click', () => {
         spinner.style.visibility = 'visible';
-        const tabsConfigs = {};
         tabs.forEach(function(tab) {
             const object = formacopoeia.components[tab.dataset.tab];
-            if (object && object.onInit) {
-                tabsConfigs[tab.dataset.tab] = object.onSave();
+            if (object && object.onSave) {
+                object.onSave();
             }
         });
         const url = new URL(window.location.href);
@@ -44,16 +58,47 @@ domReady(function() {
 
         jQuery.post('/wp-admin/admin-ajax.php', {
             action: 'save_form', 
-            tabs: tabsConfigs, 
-            ast: formacopoeia.currentForm,
+            tabs: formacopoeia.currentForm.tabs, 
+            fields: formacopoeia.currentForm.fields,
             id: searchParams.get('id'),
-            title: select('#title').value
+            title: select('#fc-title').value,
+            status: select('#fc-status').checked
         }, function(data) {
             spinner.style.visibility = 'hidden';
-            console.log(data);
         });
     });
 });
+
+window.on('resize', function() {
+    if (850 > window.innerWidth) {
+        return;
+    }
+    const sidePanel = select('#fc-side-panel');
+    sidePanel.removeAttribute('style');
+});
+
+function stickySidePanel() {
+    if (850 > window.innerWidth) {
+        return;
+    }
+    const sidePanel = select('#fc-side-panel');
+    const sidePanelHook = select('#fc-side-panel-hook');
+    const docOffsetTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const wpAdminBar = select('#wpadminbar');
+    const wpFooter = select('#wpfooter');
+    
+    if (docOffsetTop > sidePanel.offsetTop) {
+        sidePanel.style.position = 'fixed';
+        sidePanel.style.top = wpAdminBar.offsetHeight + 'px';
+    } 
+    if (docOffsetTop < sidePanelHook.offsetTop) {
+        sidePanel.removeAttribute('style');
+    }
+
+    if (docOffsetTop + sidePanel.offsetHeight + wpAdminBar.offsetHeight > wpFooter.offsetTop) {
+        sidePanel.style.top = wpFooter.offsetTop - (docOffsetTop + sidePanel.offsetHeight) + 'px';
+    }
+}
 
 function populateSidePanel(title, content, bottom = '') {
     const sidePanel = select('#fc-side-panel');
@@ -65,12 +110,17 @@ function populateSidePanel(title, content, bottom = '') {
     <div class="fc-panel-bottom">${bottom}</div>
     `
     sidePanel.style.display = 'block';
+
+    window.on('scroll', stickySidePanel);
+    stickySidePanel();
 }
 
 function emptySidePanel() {
     const sidePanel = select('#fc-side-panel');
     sidePanel.style.display = 'none';
     sidePanel.innerHTML = '';
+
+    window.off('scroll', stickySidePanel);
 }
 
 function manageBoxing(type = 'box') {
@@ -115,4 +165,8 @@ function guidGenerator() {
        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
     };
     return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+function translate(key) {
+    return formacopoeia.translations[key] || key;
 }

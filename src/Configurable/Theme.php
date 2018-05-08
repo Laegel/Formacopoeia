@@ -1,7 +1,7 @@
 <?php
-namespace Formacopoeia\All;
+namespace Formacopoeia\Configurable;
 
-class Theme_Controller extends Registerable_Controller {
+class Theme extends Configurable {
 
     protected static $inited = false;
     protected static $items = [];
