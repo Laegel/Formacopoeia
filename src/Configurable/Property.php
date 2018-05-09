@@ -11,32 +11,32 @@ class Property extends Configurable {
         array_unshift(self::$items, [
             'name' => 'text',
             'options' => [
-                'path' => $path . 'text.html'
+                'path' => $path . 'text.component.html'
             ]
         ], [
             'name' => 'textarea',
             'options' => [
-                'path' => $path . 'textarea.html'
+                'path' => $path . 'textarea.component.html'
             ]
         ], [
             'name' => 'checkbox',
             'options' => [
-                'path' => $path . 'checkbox.html'
+                'path' => $path . 'checkbox.component.html'
             ]
         ], [
             'name' => 'associative',
             'options' => [
-                'path' => $path . 'associative.html'
+                'path' => $path . 'associative.component.html'
             ]
         ], [
             'name' => 'list',
             'options' => [
-                'path' => $path . 'list.html'
+                'path' => $path . 'list.component.html'
             ]
         ], [
             'name' => 'number',
             'options' => [
-                'path' => $path . 'number.html'
+                'path' => $path . 'number.component.html'
             ]
         ]);
         parent::init();

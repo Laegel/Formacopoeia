@@ -1,5 +1,5 @@
 const utils = {
-    translate(context, data) {
+    translate: function(context, data) {
         let value = this.resolve(formacopoeia.translations, context);
         if (data) {
             for (let key in data) {
@@ -12,7 +12,7 @@ const utils = {
         }
         return value;
     },
-    resolve(o, s) {
+    resolve: function(o, s) {
         s = s.replace(/\[(\w+)\]/g, '.$1');
         s = s.replace(/^\./, '');
         const a = s.split('.');
@@ -26,7 +26,7 @@ const utils = {
         }
         return o;
     },
-    toArray(object) {
+    toArray: function(object) {
         return [].slice.call(object);
     }
 };

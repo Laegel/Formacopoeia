@@ -12,7 +12,7 @@ class Behaviour extends Configurable {
             'name' => 'mail',
             'options' => [
                 'label' => 'Send mail',
-                'path' => $path . 'mail.html',
+                'path' => $path . 'mail.component.html',
                 'callback' => 'Formacopoeia\Behaviours\Mail::handle'
             ]
         ];
@@ -21,7 +21,7 @@ class Behaviour extends Configurable {
             'name' => 'database',
             'options' => [
                 'label' => 'Store in database',
-                'path' => $path . 'database.html',
+                'path' => $path . 'database.component.html',
                 'callback' => 'Formacopoeia\Behaviours\Database::handle'
             ]
         ];

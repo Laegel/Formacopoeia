@@ -11,17 +11,17 @@ class Tab extends Configurable {
         array_unshift(self::$items, [
             'name' => 'editor',
             'options' => [
-                'path' => $path . 'editor.html'
+                'path' => $path . 'editor.component.html'
             ]
         ], [
             'name' => 'options',
             'options' => [
-                'path' => $path . 'options.html'
+                'path' => $path . 'options.component.html'
             ]
         ], [
             'name' => 'behaviours',
             'options' => [
-                'path' => $path . 'behaviours.html'
+                'path' => $path . 'behaviours.component.html'
             ]
         ]);
         parent::init();

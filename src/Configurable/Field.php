@@ -7,6 +7,7 @@ class Field extends Configurable {
     protected static $items = [];
 
     protected static function init() {
+        $path = \Formacopoeia\Plugin::$dir . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'both' . DIRECTORY_SEPARATOR . 'fields' . DIRECTORY_SEPARATOR;
         self::$items[] = [
             'name' => 'text',
             'options' => [
@@ -29,7 +30,7 @@ class Field extends Configurable {
                         'type' => 'text'
                     ]
                 ],
-                'template' => '<div class="{{class}}"><label>{{label}}</label><input type="text" name="formacopoeia[{{name}}]" placeholder="{{placeholder}}"></div>'
+                'path' => $path . 'text.component.html'
             ]
         ];
         
@@ -49,7 +50,7 @@ class Field extends Configurable {
                         'type' => 'text'
                     ]
                 ],
-                'template' => '<div class="{{class}}"><input type="submit" name="formacopoeia[{{name}}]" value="{{text}}"></div>',
+                'path' => $path . 'submit.component.html'
             ]
         ];
         self::$items[] = [
@@ -71,7 +72,7 @@ class Field extends Configurable {
                         'type' => 'text'
                     ]
                 ],
-                'template' => '<div class="{{class}}"><label>{{label}}</label><select name="formacopoeia[{{name}}]">{{#each choices}}<option value="{{key}}">{{value}}</option>{{/each}}</select></div>'
+                'path' => $path . 'select.component.html'
             ]
         ];
         self::$items[] = [
@@ -80,17 +81,20 @@ class Field extends Configurable {
                 'label' => 'Email',
                 'categories' => ['default'],
                 'props' => [
-                    'name' => [
+                    'label' => [
                         'type' => 'text'
                     ],
-                    'label' => [
+                    'placeholder' => [
+                        'type' => 'text'
+                    ],
+                    'name' => [
                         'type' => 'text'
                     ],
                     'class' => [
                         'type' => 'text'
                     ]
                 ],
-                'template' => '<div class="{{class}}"><label>{{label}}</label><input type="email" name="formacopoeia[{{name}}]"></div>',
+                'path' => $path . 'email.component.html',
                 'validate' => function($value, $submission) {
                     $is_valid = !!filter_var($value, FILTER_VALIDATE_EMAIL);
                     return [
@@ -122,7 +126,7 @@ class Field extends Configurable {
                         'type' => 'text'
                     ]
                 ],
-                'template' => '<div class="{{class}}"><label>{{label}}</label><input type="file" name="formacopoeia[{{name}}]"></div>',
+                'path' => $path . 'file.component.html',
                 'validate' => function($value, $submission) {
                     // Check file extension + filesize (server)
 
@@ -149,7 +153,7 @@ class Field extends Configurable {
                         'type' => 'text'
                     ]
                 ],
-                'template' => '<div class="{{class}}"><label>{{label}}</label><input type="checkbox" name="formacopoeia[{{name}}]"></div>'
+                'path' => $path . 'checkbox.component.html'
             ]
         ];
 
@@ -171,7 +175,7 @@ class Field extends Configurable {
                         'type' => 'text'
                     ]
                 ],
-                'template' => '<div class="{{class}}"><label>{{label}}</label><div>{{#each choices}}<label>{{value}}</label><input type="radio" name="formacopoeia[{{name}}]" value="{{key}}">{{/each}}</div></div>'
+                'path' => $path . 'radio.component.html'
             ]
         ];
 
@@ -190,7 +194,7 @@ class Field extends Configurable {
                         'type' => 'text'
                     ]
                 ],
-                'template' => '<div class="{{class}}"><label>{{label}}</label><textarea name="formacopoeia[{{name}}]">{{value}}</textarea></div>'
+                'path' => $path . 'textarea.component.html'
             ]
         ];
 

@@ -79,6 +79,7 @@ class Form_Controller extends Admin_Controller {
 
         $properties = Property::get_all();
 
+        self::output_fields_content($fields);
         self::output_tabs_content($tabs);
         self::output_behaviours_content($behaviours);
         self::output_properties_content($properties);
@@ -128,6 +129,19 @@ class Form_Controller extends Admin_Controller {
             'template' => $template,
             'script' => $script
         ];
+    }
+
+    private static function output_fields_content($fields = []) {
+        foreach ($fields as $field) {
+            extract(self::parse_component_file($field['options']['path']));
+            $template->setAttribute('data-template-field', $field['name']);
+            if (!empty($script)) {
+                $script->setAttribute('data-script-field', $field['name']);
+                $script->innertext = 'formacopoeia.fields.' . $field['name'] . ' = ' . $script->innertext;
+            }
+            echo $template;
+            echo $script;
+        }
     }
 
     private static function output_properties_content($properties = []) {

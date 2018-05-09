@@ -243,6 +243,8 @@ const test = {
                 const id = guidGenerator();
                 const realTarget = e.target.closest('a.fc-new-field');
                 const field = getFieldByType(realTarget.dataset.field);
+                console.log(realTarget.dataset.field);
+                
                 form.innerHTML += this.draggifyField(renderer(field.options.template, {}), id);
                 choices.style.display = 'none';
                 formacopoeia.currentForm.fields.push({
