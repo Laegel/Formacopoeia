@@ -1,11 +1,13 @@
 <?php
 namespace Formacopoeia\Templating;
 
+use \Formacopoeia\Plugin;
+
 class Template_Controller extends \WP_Plugin_Maker\Controller {
 
     public static function init() {
-        wp_enqueue_script('handlebars', WP_PLUGIN_URL . DIRECTORY_SEPARATOR . 'formacopoeia' . DIRECTORY_SEPARATOR . 'assets/libs/handlebars.min-latest.js');
-        wp_enqueue_script('handlebars-helpers', WP_PLUGIN_URL . DIRECTORY_SEPARATOR . 'formacopoeia' . DIRECTORY_SEPARATOR . 'assets/libs/handlebars-helpers.js', ['handlebars']);
+        wp_enqueue_script('fc-handlebars', Plugin::$url . '/assets/libs/handlebars.min-latest.js');
+        wp_enqueue_script('fc-handlebars-helpers', Plugin::$url . '/assets/libs/handlebars-helpers.js', ['fc-handlebars']);
     }
 
     private static function save_part($name, $content) {
@@ -37,10 +39,12 @@ class Template_Controller extends \WP_Plugin_Maker\Controller {
         ?>
         <template-body data-id="<?php echo $id;?>"></template-body>
         <script type="text/javascript">
-            var source   = '<?php echo addslashes(str_replace(["\r", "\n", "\r\n"], '', $string));?>';
-            var template = Handlebars.compile(source);
-            var result = template(<?php echo json_encode($data);?>);
-            select('template-body[data-id="<?php echo $id;?>"]').innerHTML = result;
+            window.fctmp = {};
+            window.fctmp.source   = '<?php echo addslashes(str_replace(["\r", "\n", "\r\n"], '', $string));?>';
+            window.fctmp.template = Handlebars.compile(window.fctmp.source);
+            window.fctmp.result = window.fctmp.template(<?php echo json_encode($data);?>);
+            fcUtils.select('template-body[data-id="<?php echo $id;?>"]').innerHTML = window.fctmp.result;
+            delete window.fctmp;
         </script>
         <?php
     }

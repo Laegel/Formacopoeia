@@ -1,0 +1,16 @@
+<template>
+<div class="{{class}}">
+    <label>{{label}}</label>
+    <input type="text" name="formacopoeia[{{name}}]" placeholder="{{placeholder}}">
+</div>
+</template>
+<script>
+{
+    onInit: function (wrapper, data) {
+        fcUtils.select('input', wrapper).on('input', function () {
+            console.log(this.value, data);
+        });
+    }
+};
+
+</script>

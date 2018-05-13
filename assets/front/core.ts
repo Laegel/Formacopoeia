@@ -1,49 +1,50 @@
-domReady(function() {
-    jQuery.get('/wp-admin/admin-ajax.php', {
-        action: 'get_fields'
-    }, function(dataFields) {
-        const slots = selectAll('form[data-formacopoeia-slot]');
-        toArray(slots).forEach(slot => {
-            jQuery.get('/wp-admin/admin-ajax.php', {
-                action: 'get_form',
-                id: slot.dataset.formacopoeiaSlot,
-                token: slot.dataset.token
-            }, function(data) {
-                let form = '';
-                data.form.forEach(field => {
-                    form += renderer(dataFields.fields[field.type], field.props);
-                });
-                select('.fc-wrapper', slot).innerHTML = form;
-                slot.removeAttribute('data-token');
-                slot.on('submit', function(e) {
-                    e.preventDefault();
-                    const formData = new FormData(this);
-                    const request = new XMLHttpRequest();
-                    request.onreadystatechange = function() {
-                        if (this.readyState === XMLHttpRequest.DONE) {
-                            if (this.status === 200) {
-                                console.log(JSON.parse(this.responseText))
-                                const trigger = new CustomEvent('success', {
-                                    detail: {
-                                        data: JSON.parse(this.responseText),
-                                        status: this.status
-                                    }
-                                });
-                            } else {
-                                const trigger = new CustomEvent('failure', {
-                                    detail: {
-                                        data: JSON.parse(this.responseText),
-                                        status: this.status
-                                    }
-                                });
-                            }
-                        }
-                    };
-                    request.open('post', '/wp-admin/admin-ajax.php?action=submit_formacopoeia');
-                    formData.append('id', slot.dataset.formacopoeiaSlot);
-                    request.send(formData);
-                });
+fcUtils.domReady(async function() {
+
+    qwest.setDefaultOptions({
+        responseType: 'json',
+    });
+
+    const slots = fcUtils.selectAll('form[data-formacopoeia]');
+    
+    slots.forEach(async slot => {
+        slot.removeAttribute('action');
+        slot.removeAttribute('method');
+
+        const data = await qwest.get('/wp-admin/admin-ajax.php', {
+            action: 'get_form',
+            id: slot.dataset.formacopoeia,
+            token: slot.dataset.token
+        });
+        let formContent = '';
+        
+        data.response.form.forEach(field => {
+            if (formacopoeia.fields[field.type] && formacopoeia.fields[field.type].onInit) {
+                formacopoeia.fields[field.type].onInit(fcUtils.select('[data-id="' + field.id + '"]'), field.props);
+            }
+        });
+        // slot.removeAttribute('data-token');
+        slot.on('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            const result = await qwest.post('/wp-admin/admin-ajax.php', formData, {
+                dataType: 'formdata'
             });
+
+            const event = new CustomEvent('fc:after', {
+                detail: {
+                    response: result.response,
+                },
+                bubbles: true,
+                cancelable: true
+            });
+            this.dispatchEvent(event);
+        });
+
+        slot.on('fc:after', function(data) {
+            if (data.detail.response.after && formacopoeia.afters[data.detail.response.after.name]) {                
+                formacopoeia.afters[data.detail.response.after.name](this, data.detail.response);
+            }
         });
     });
 });

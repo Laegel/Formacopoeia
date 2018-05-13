@@ -1,6 +1,6 @@
 Handlebars.registerHelper('translate', function() {
     const context = ('object' !== typeof arguments[1] ? arguments[1] + '.' : '') + arguments[0];
-    return utils.translate(context) || context;
+    return fcUtils.translate(context) || context;
 });
 
 Handlebars.registerHelper('isSelected', function(value) {

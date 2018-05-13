@@ -1,6 +1,7 @@
 <div class="fc-tab-content">
     <h2>{{translate 'behaviours.title'}}</h2>
-    <div class="container">
+    <p>{{translate 'behaviours.description'}}</p>
+    <div class="container flex">
         <select id="fc-select-behaviour">
             {{#each behaviours}}
                 <option value="{{name}}">{{options.label}}</option>
@@ -8,18 +9,22 @@
         </select>
         <span id="fc-add-behaviour" class="button dashicons dashicons-plus"></span>
     </div>
-    <div class="rows" data-renderer-part="behaviourRows"> 
-        {{#each2 formBehaviours}}
-            <div class="fc-behaviour" data-row="{{$row}}">
-                <div class="fc-behaviour-options fc-options-container">
-                    <h2>{{displayLabel data.name}}</h2>
-                    <span class="fc-remove button danger dashicons dashicons-trash"></span>
-                    <span class="fc-accordion button dashicons dashicons-arrow-down-alt2"></span>
+    <h2>{{translate 'behaviours.list'}}</h2>
+    <div class="container">
+        <div class="rows" data-renderer-part="behaviourRows"> 
+            {{#each2 formBehaviours}}
+                <div class="fc-behaviour" data-row="{{$row}}">
+                    <div class="fc-behaviour-options fc-options-container">
+                        <h2>{{displayLabel data.name}}</h2>
+                        <span class="fc-remove button danger dashicons dashicons-trash"></span>
+                        <span class="fc-update button button-primary dashicons dashicons-update"></span>
+                        <span class="fc-accordion button dashicons dashicons-arrow-down-alt2"></span>
+                    </div>
+                    <div class="row container">
+                        <div class="fc-behaviour-container" data-behaviour="{{data.name}}"></div>
+                    </div>
                 </div>
-                <div class="row container">
-                    <div class="fc-behaviour-container" data-behaviour="{{data.name}}"></div>
-                </div>
-            </div>
-        {{/each2}}
+            {{/each2}}
+        </div>
     </div>
 </div>

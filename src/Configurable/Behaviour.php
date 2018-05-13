@@ -13,7 +13,23 @@ class Behaviour extends Configurable {
             'options' => [
                 'label' => 'Send mail',
                 'path' => $path . 'mail.component.html',
-                'callback' => 'Formacopoeia\Behaviours\Mail::handle'
+                'callback' => 'Formacopoeia\Behaviours\Mail::handle',
+                'values' => [
+                    'sender' => [
+                        'required' => true
+                    ],
+                    'recipient' => [
+                        'required' => true
+                    ],
+                    'subject' => [
+                        'required' => true
+                    ],
+                    'message' => [
+                        'required' => true,
+                        'sanitize' => false,
+                        'type' => 'wysiwyg'
+                    ]
+                ]
             ]
         ];
         

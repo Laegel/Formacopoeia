@@ -1,5 +1,5 @@
 <?php
-namespace Formacopoeia\Model;
+namespace Formacopoeia\Behaviours;
 
 use Formacopoeia\All\Form_Controller as Form;
 use Formacopoeia\Configurable\Field;
@@ -45,6 +45,7 @@ class Submission {
         foreach ($form_fields as $form_field) {
             $out = $this->validate_field($form_field);
             if (isset($out['is_valid']) && !$out['is_valid']) {
+                $out['id'] = $form_field->id;
                 $this->fields_validation[] = $out;
             }
         }
@@ -63,20 +64,30 @@ class Submission {
     public function dispatch_behaviours() {
         $behaviours = $this->form->get_tabs()->behaviours;
         apply_filters('formacopoeia_before_behaviours', $behaviours);
-        foreach ($behaviours as $behaviour) {
-            $this->dispatch_behaviour($behaviour->name);
+        foreach ($behaviours as $index => $behaviour) {
+            $this->dispatch_behaviour($index, $behaviour->name);
         }
     }
 
-    private function dispatch_behaviour($behaviour_name) {
+    private function dispatch_behaviour($index, $behaviour_name) {
         do_action('formacopoeia_before_behaviour_' . $behaviour_name, $this);
         $behaviour = Behaviour::get_by_name($behaviour_name);
         if (isset($behaviour['options']['callback']) && is_callable($behaviour['options']['callback'])) {
-            call_user_func_array($behaviour['options']['callback'], [$this]);
+            call_user_func_array($behaviour['options']['callback'], [$this, $index]);
         }
     }
 
     public function get_errors() {
         return $this->fields_validation;
+    }
+
+    public function replace_placeholders($string) {
+        $matches = [];
+        preg_match_all('~{{(.*)}}~U', $string, $matches, PREG_SET_ORDER);
+        
+        foreach ($matches as $match) {
+            $string = str_replace($match[0], $this->values[$match[1]], $string);
+        }
+        return $string;
     }
 }

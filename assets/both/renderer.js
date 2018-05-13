@@ -19,11 +19,11 @@ function renderer(template, data) {
 
     const parser = new DOMParser();
     doc = parser.parseFromString(template, 'text/html');
-    toArray(doc.all).forEach(function(element) {
+    fcUtils.toArray(doc.all).forEach(function(element) {
         if (-1 !== ['html', 'head', 'body'].indexOf(element.localName)) {
             return;
         }
-        toArray(element.attributes).forEach(function(attribute) {
+        fcUtils.toArray(element.attributes).forEach(function(attribute) {
             if (0 === attribute.name.indexOf('bind:')) {
                 manageBind(element, attribute, data);
                 return;

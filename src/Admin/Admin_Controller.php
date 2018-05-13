@@ -4,6 +4,7 @@ namespace Formacopoeia\Admin;
 use \Formacopoeia\Templating\Template_Controller;
 use \Formacopoeia\All\Main_Controller;
 use \Formacopoeia\Translations\Translator;
+use \Formacopoeia\Plugin;
 
 class Admin_Controller extends \WP_Plugin_Maker\Controller {
 
@@ -12,7 +13,8 @@ class Admin_Controller extends \WP_Plugin_Maker\Controller {
         Template_Controller::init();
         Main_Controller::enqueue_scripts();
 
-        wp_enqueue_script('fc-renderer', WP_PLUGIN_URL . '/formacopoeia/assets/both/renderer.js');
+        wp_enqueue_script('fc-renderer', Plugin::$url . '/assets/both/renderer.js', ['fc-utils']);
+        wp_enqueue_script('fc-toast', Plugin::$url . '/assets/libs/toast.min.js', ['jquery-core']);
         add_thickbox();
     }
 

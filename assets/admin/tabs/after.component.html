@@ -1,0 +1,46 @@
+<template>
+<div class="fc-tab-content">
+    <h2>{{translate 'after.action'}}</h2>
+    <div class="container">
+        <select id="fc-after">
+            {{#each afters}}
+                <option value="{{name}}">{{options.label}}</option>
+            {{/each}}
+        </select>
+        <div id="fc-after-content"></div>
+    </div>
+</div>
+</template>
+<script>
+{
+    onInit: function () {
+        formacopoeia.currentForm.tabs.after =
+            formacopoeia.currentForm.tabs.after ||
+                { name: formacopoeia.afters[0].name };
+        return {
+            afters: formacopoeia.afters
+        };
+    },
+    onActive: function () {
+        var _this = this;
+        var afterSelect = fcUtils.select('#fc-after');
+        afterSelect.on('change', function (e) {
+            console.log(e.target.value);
+            formacopoeia.currentForm.tabs.after = {
+                name: e.target.value
+            };
+            _this.displayContent(e.target.value);
+        });
+        this.displayContent(formacopoeia.currentForm.tabs.after.name);
+    },
+    displayContent: function (name) {
+        var data = {};
+        var templateElement = fcUtils.select('[data-template-after="' + name + '"]');
+        if (!templateElement) {
+            return;
+        }
+        fcUtils.select('#fc-after-content').innerHTML = renderer(templateElement.innerHTML, data);
+    }
+};
+
+</script>

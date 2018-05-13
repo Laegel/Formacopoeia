@@ -11,7 +11,7 @@ const test = {
         }
     },
     renderForm() {
-        const form = select('#fc-form', this.iframeDoc);
+        const form = fcUtils.select('#fc-form', this.iframeDoc);
         form.innerHTML = '';
         for (let index in formacopoeia.currentForm.fields) {
             const field = getFieldByType(formacopoeia.currentForm.fields[index].type);
@@ -19,23 +19,22 @@ const test = {
                 // Notify saved field does not exist anymore
                 continue;
             }
-            const template = renderer(field.options.template, formacopoeia.currentForm.fields[index].props);
+            const template = this.renderTemplate('field', formacopoeia.currentForm.fields[index].type, formacopoeia.currentForm.fields[index].props);
             form.innerHTML += this.draggifyField(template, formacopoeia.currentForm.fields[index].id);
+
+            const obj = formacopoeia.fieldsComponents[formacopoeia.currentForm.fields[index].type];
+            if (obj && obj.onInit) {
+                obj.onInit(fcUtils.select('[data-id="' + formacopoeia.currentForm.fields[index].id + '"]', form), formacopoeia.currentForm.fields[index]);
+            }
         }
     },
-    renderTemplatePart(templateId, data = {}) {
-        return renderer(select('[data-template-part="' + templateId + '"]').innerHTML, data);
+    renderTemplate(type, templateId, data = {}) {
+        return renderer(fcUtils.select('[data-template-' + type + '="' + templateId + '"]').innerHTML, data);
     },
     draggifyField(template, id) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(template, 'text/html');
-        let container;
-        toArray(doc.all).some(item => {
-            if (-1 === ['html', 'head', 'body'].indexOf(item.localName)) {
-                container = item;
-                return true;
-            }
-        });
+        const container = fcUtils.getRootElement(doc);
         container.setAttribute('draggable', 'true');
         container.dataset.id = id;
         container.setAttribute('ondragstart', 'functions.drag(event)');
@@ -44,7 +43,7 @@ const test = {
         return container.outerHTML;
     },
     resizeIframe() {
-        const form = select('#fc-form', this.iframeDoc);
+        const form = fcUtils.select('#fc-form', this.iframeDoc);
         this.iframe.height = form.scrollHeight + 30;
     },
     manageTheme() {
@@ -53,8 +52,8 @@ const test = {
                 this.resizeIframe();
             });
         };
-        const style = select('#fc-style', this.iframeDoc);
-        const themeStyle = select('#fc-theme-style', this.iframeDoc);
+        const style = fcUtils.select('#fc-style', this.iframeDoc);
+        const themeStyle = fcUtils.select('#fc-theme-style', this.iframeDoc);
 
         const setHref = themeName => {
             style.href = themeName ? getThemeByName(themeName).options.path + '?' + Date.now() : themeName;
@@ -66,14 +65,20 @@ const test = {
             setHref(this.value);
         });
         setHref(this.themeSelector.value);
+
+        this.classesInput.on('input', (e) => {
+            const form = fcUtils.select('#fc-form', this.iframeDoc);
+            form.setAttribute('class', e.target.value);
+            formacopoeia.currentForm.tabs.editor.classes = e.target.value;
+        });
     },
     iframeReady(iframe) {
         this.iframeDoc = iframe.contentDocument;
-        this.fieldPropertiesBlock = select('#fc-side-panel');
-        const form = select('#fc-form', this.iframeDoc);
+        this.fieldPropertiesBlock = fcUtils.select('#fc-side-panel');
+        const form = fcUtils.select('#fc-form', this.iframeDoc);
 
         form.on('drop', () => {
-            const fields = selectAll('[draggable]', form);
+            const fields = fcUtils.selectAll('[draggable]', form);
             const newOrder = [];
             fields.forEach(field => {
                 formacopoeia.currentForm.fields.some(item => {
@@ -92,6 +97,7 @@ const test = {
 
         this.renderForm();
         this.resizeIframe();
+        this.resizeIframe(); // Tweak, only one call doesn't resize
 
         iframe.contentWindow.on('click', e => {
             e.preventDefault();
@@ -120,7 +126,7 @@ const test = {
                 console.log(property + ' does not exist');
             }
             const newId = guidGenerator();
-            propertiesString += '<div class="fc-property-row"><label>' + utils.translate('properties.' + prop) + '</label>' + '<property-wrapper data-name="' + prop + '" data-property="' + field.options.props[prop].type + '" data-id="' + newId + '">' + renderer(select('[data-template-property="' + field.options.props[prop].type + '"]').innerHTML, {prop: prop, value: value}) + '</property-wrapper></div>';
+            propertiesString += '<div class="fc-property-row"><label>' + fcUtils.translate('properties.' + prop) + '</label>' + '<property-wrapper data-name="' + prop + '" data-property="' + field.options.props[prop].type + '" data-id="' + newId + '">' + this.renderTemplate('property', field.options.props[prop].type, {prop: prop, value: value}) + '</property-wrapper></div>';
             propertiesEvents.push(newId);
         }
         propertiesString += '</div>';
@@ -148,13 +154,13 @@ const test = {
                 const onUpdate = e => {
                     formField.props[wrapper.dataset.name] = e.detail.value;
                     const tmp = getFieldByType(formField.type);
-                    select('[draggable][data-id="' + formField.id + '"]', this.iframeDoc).innerHTML = renderer(tmp.options.template, formField.props);
+                    fcUtils.select('[draggable][data-id="' + formField.id + '"]', this.iframeDoc).innerHTML = this.renderTemplate('field', formField.type, formField.props);
                     if (e.detail.refresh) {
                         wrapper.off('update', onUpdate);
                         const rerenderValue = {
                             value: e.detail.value
                         }
-                        wrapper.innerHTML = renderer(select('[data-template-property="' + wrapper.dataset.property + '"]').innerHTML, rerenderValue);
+                        wrapper.innerHTML = this.renderTemplate('property', wrapper.dataset.property, rerenderValue);
                         initPropertyField(wrapper);
                     }
                     this.resizeIframe();
@@ -164,15 +170,15 @@ const test = {
         }
 
         propertiesEvents.forEach(function(propId) {
-            const wrapper = select('property-wrapper[data-id="' + propId + '"]');
+            const wrapper = fcUtils.select('property-wrapper[data-id="' + propId + '"]');
             initPropertyField(wrapper);
         });
         
-        select('#fc-remove', this.fieldPropertiesBlock).on('click', () => {
+        fcUtils.select('#fc-remove', this.fieldPropertiesBlock).on('click', () => {
             for (let i = 0; i < formacopoeia.currentForm.fields.length; ++i) {
                 if (id === formacopoeia.currentForm.fields[i].id) {
                     formacopoeia.currentForm.fields.splice(i, 1);
-                    const tmp = select('[draggable][data-id="' + id + '"]', this.iframeDoc);
+                    const tmp = fcUtils.select('[draggable][data-id="' + id + '"]', this.iframeDoc);
                     tmp.parentNode.removeChild(tmp);
                     emptySidePanel();
                     this.resizeIframe();
@@ -180,8 +186,8 @@ const test = {
                 }
             }
         });
-        const moveUp = select('#fc-move-up', this.fieldPropertiesBlock);
-        const moveDown = select('#fc-move-down', this.fieldPropertiesBlock);
+        const moveUp = fcUtils.select('#fc-move-up', this.fieldPropertiesBlock);
+        const moveDown = fcUtils.select('#fc-move-down', this.fieldPropertiesBlock);
 
         if (moveUp) {
             moveUp.on('click', e => {
@@ -219,42 +225,46 @@ const test = {
         this.resizeIframe();
     },
     manageButtons() {
-        const form = select('#fc-form', this.iframeDoc);
-        const choices = select('div#choices');
+        const form = fcUtils.select('#fc-form', this.iframeDoc);
+        const choices = fcUtils.select('div#choices');
 
         const categories = this.getFieldsCategories();
-        choices.innerHTML = this.renderTemplatePart('newFieldContent', {categories: categories});
-        const newFieldLinks = selectAll('a.fc-new-field');
+        choices.innerHTML = this.renderTemplate('part', 'newFieldContent', {categories: categories});
+        const newFieldLinks = fcUtils.selectAll('a.fc-new-field');
 
-        selectAll('[data-category]').on('click', function() {
-            selectAll('.fc-category-container').forEach(item => {
+        fcUtils.selectAll('[data-category]').on('click', function() {
+            fcUtils.selectAll('.fc-category-container').forEach(item => {
                 item.removeAttribute('style');
             });
-            select('.fc-category-container[data-category="' + this.dataset.category + '"]').style.display = 'block';
+            fcUtils.select('.fc-category-container[data-category="' + this.dataset.category + '"]').style.display = 'block';
         });
-        select('.fc-category-container[data-category="default"]').style.display = 'block';
+        fcUtils.select('.fc-category-container[data-category="default"]').style.display = 'block';
 
-        select('#fc-add').on('click', () => {
+        fcUtils.select('#fc-add').on('click', () => {
             this.resizeIframe();
         });
 
-        toArray(newFieldLinks).forEach(item => {
+        fcUtils.toArray(newFieldLinks).forEach(item => {
             item.on('click', e => {
                 const id = guidGenerator();
                 const realTarget = e.target.closest('a.fc-new-field');
                 const field = getFieldByType(realTarget.dataset.field);
-                console.log(realTarget.dataset.field);
-                
-                form.innerHTML += this.draggifyField(renderer(field.options.template, {}), id);
+                form.innerHTML += this.draggifyField(this.renderTemplate('field', realTarget.dataset.field, {}), id);
                 choices.style.display = 'none';
                 formacopoeia.currentForm.fields.push({
                     id,
                     type: realTarget.dataset.field,
                     props: {}
                 });
-                select('#TB_closeWindowButton').click();
+                fcUtils.select('#TB_closeWindowButton').click();
                 this.togglePropertiesBlock(id);
+                this.resizeIframe();
             });
+        });
+
+        fcUtils.select('#fc-reset').on('click', () => {
+            this.renderForm();
+            this.resizeIframe();
         });
     },
     getFieldsCategories() {
@@ -269,7 +279,7 @@ const test = {
             const fieldData = {
                 name: formacopoeia.fields[i].name,
                 label: 'fields.' + formacopoeia.fields[i].name,
-                rendered: renderer(field.options.template, { label: 'Label', value: 'Value', text: 'Text' })
+                rendered: this.renderTemplate('field', formacopoeia.fields[i].name, { label: 'Label', value: 'Value', text: 'Text' })
             };
             if (formacopoeia.fields[i].options.categories) {
                 formacopoeia.fields[i].options.categories.forEach(category => {
@@ -288,18 +298,20 @@ const test = {
         return categories;
     },
     onInit() {
+        formacopoeia.currentForm.tabs.editor = formacopoeia.currentForm.tabs.editor || {};
         return {
-            themes: formacopoeia.themes
+            themes: formacopoeia.themes,
+            classes: formacopoeia.currentForm.tabs.editor.classes || ''
         };
     },
     onActive() {
-        let code = "<script src='/wp-content/plugins/formacopoeia/assets/admin/iframe/core.js'><\/script><script src='/wp-content/plugins/formacopoeia/assets/libs/light-query.js'><\/script>";
+        let code = "<script src='/wp-content/plugins/formacopoeia/assets/admin/iframe/core.js'><\/script><script src='/wp-content/plugins/formacopoeia/assets/libs/utils.js'><\/script>";
         code += "<form id='fc-form'></form><link rel='stylesheet' href='/wp-content/plugins/formacopoeia/assets/admin/css/core.css'><link id='fc-theme-style' rel='stylesheet' href='" + formacopoeia.frontStyle + "'><link id='fc-style' rel='stylesheet' href=''>";
 
-        const iframe = select('#fc-preview');
+        const iframe = fcUtils.select('#fc-preview');
         iframe.src = 'javascript: "' + code + '"';
-        this.themeSelector = select('#fc-theme');
-        this.classesInput = select('#fc-classes');
+        this.themeSelector = fcUtils.select('#fc-theme');
+        this.classesInput = fcUtils.select('#fc-classes');
 
         iframe.on('load', () => {
             this.iframe = iframe;
@@ -312,11 +324,12 @@ const test = {
         window.on('resize', () => {
             this.resizeIframe();
         });
-    },
+    }
+    /*,
     onSave() {
         return {
             classes: this.classesInput.value,
             theme: this.themeSelector.value
         };
-    }
+    }*/
 }

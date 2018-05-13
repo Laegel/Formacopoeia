@@ -14,16 +14,23 @@ class Tab extends Configurable {
                 'path' => $path . 'editor.component.html'
             ]
         ], [
-            'name' => 'options',
-            'options' => [
-                'path' => $path . 'options.component.html'
-            ]
-        ], [
             'name' => 'behaviours',
             'options' => [
                 'path' => $path . 'behaviours.component.html'
             ]
-        ]);
+        ], [
+            'name' => 'after',
+            'options' => [
+                'path' => $path . 'after.component.html'
+            ]
+        ]
+        // , [
+        //     'name' => 'options',
+        //     'options' => [
+        //         'path' => $path . 'options.component.html'
+        //     ]
+        // ]
+        );
         parent::init();
     }
 

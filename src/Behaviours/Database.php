@@ -1,15 +1,12 @@
 <?php
 namespace Formacopoeia\Behaviours;
 
-use Formacopoeia\Model\Submission;
-
 use Formacopoeia\All\Submission_Controller;
-
 use Formacopoeia\Translations\Translator;
 
 class Database extends Behaviour {
 
-    public static function handle(Submission $submission) {
+    public static function handle(Submission $submission, $index) {
         $form = $submission->get_form();
         $title = '#' .$form->ID;
         $keys = [
@@ -17,16 +14,16 @@ class Database extends Behaviour {
                 return '"' . wp_trim_excerpt($value) . '"';
             },
             'email' => function($value) {
-                return Translator::t('from %s', $value);
+                return Translator::t('database.messageFrom', $value);
             },
             'name' => function($value) {
-                return Translator::t('from %s', $value);
+                return Translator::t('database.messageFrom', $value);
             }
         ];
         $submission->walk(function($key, $value) use ($keys, &$title) {
             if (isset($keys[$key])) {
                 $title = $keys[$key]($value);
-                break;
+                return;
             }
         });
         $id = wp_insert_post([

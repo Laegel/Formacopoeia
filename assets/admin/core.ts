@@ -1,8 +1,45 @@
-domReady(function() {
-    const tabs = selectAll('.fc-tab');
-    const container = select('#fc-container');
-    const saveButton = select('#fc-save');
-    const spinner = select('.spinner');
+toastr.options = {
+    closeButton: false,
+    debug: false,
+    newestOnTop: false,
+    progressBar: false,
+    positionClass: 'toast-bottom-right',
+    preventDuplicates: false,
+    onclick: null,
+    showDuration: 300,
+    hideDuration: 1000,
+    timeOut: 5000,
+    extendedTimeOut: 1000,
+    showEasing: 'swing',
+    hideEasing: 'linear',
+    showMethod: 'fadeIn',
+    hideMethod: 'fadeOut'
+};
+
+fcUtils.domReady(function() {
+    const tabs = fcUtils.selectAll('.fc-tab');
+    const container = fcUtils.select('#fc-container');
+    const saveButton = fcUtils.select('#fc-save');
+    const spinner = fcUtils.select('.spinner');
+
+    const renderForm = function() {
+        const parser = new DOMParser();
+        let form = '';
+        for (let index in formacopoeia.currentForm.fields) {
+            const field = getFieldByType(formacopoeia.currentForm.fields[index].type);
+            if (!field) {
+                toastr.error('editor.messages.missingFiekd', {fieldName: formacopoeia.currentForm.fields[index].type})
+                continue;
+            }
+            const template = renderer(fcUtils.select('[data-template-field="' + formacopoeia.currentForm.fields[index].type + '"]').innerHTML, formacopoeia.currentForm.fields[index].props);
+            
+            const doc = parser.parseFromString(template, 'text/html');
+            const container = fcUtils.getRootElement(doc);
+            container.dataset.id = formacopoeia.currentForm.fields[index].id;
+            form += container.outerHTML;
+        }
+        return form;
+    };
 
     tabs.forEach(tab => {
         const object = formacopoeia.components[tab.dataset.tab];
@@ -11,7 +48,7 @@ domReady(function() {
             data = object.onInit();
         }
         data['$tab'] = object;
-        const handlebarsTemplate = Handlebars.compile(select('[data-template-tab="' + tab.dataset.tab + '"]').innerHTML);
+        const handlebarsTemplate = Handlebars.compile(fcUtils.select('[data-template-tab="' + tab.dataset.tab + '"]').innerHTML);
 
         const template = document.createElement('script');
         template.dataset.templateCache = tab.dataset.tab;
@@ -23,7 +60,11 @@ domReady(function() {
     tabs.on('click', function(e) {
         e.preventDefault();
         emptySidePanel();
-        const activeTab = select('.fc-tab.active');
+
+        for (let i in tinyMCE.editors){
+            tinyMCE.editors[i].remove();
+        }
+        const activeTab = fcUtils.select('.fc-tab.active');
         if (activeTab) {
             activeTab.classList.remove('active');
             if (formacopoeia.components[activeTab.dataset.tab].onRemoveActive) {
@@ -33,7 +74,7 @@ domReady(function() {
         this.classList.add('active');
         const tab = this.dataset.tab;
         const object = formacopoeia.components[tab];
-        const template = select('[data-template-cache="' + tab + '"]');
+        const template = fcUtils.select('[data-template-cache="' + tab + '"]');
         
         const handlebarsTemplate = Handlebars.compile(template.innerHTML);
 
@@ -45,7 +86,7 @@ domReady(function() {
     });
     tabs[0].click();
 
-    saveButton.on('click', () => {
+    saveButton.on('click', async () => {
         spinner.style.visibility = 'visible';
         tabs.forEach(function(tab) {
             const object = formacopoeia.components[tab.dataset.tab];
@@ -56,16 +97,17 @@ domReady(function() {
         const url = new URL(window.location.href);
         const searchParams = new URLSearchParams(url.search);
 
-        jQuery.post('/wp-admin/admin-ajax.php', {
+        const data = await qwest.post(ajaxurl, {
             action: 'save_form', 
             tabs: formacopoeia.currentForm.tabs, 
             fields: formacopoeia.currentForm.fields,
             id: searchParams.get('id'),
-            title: select('#fc-title').value,
-            status: select('#fc-status').checked
-        }, function(data) {
-            spinner.style.visibility = 'hidden';
+            title: fcUtils.select('#fc-title').value,
+            content: renderForm(),
+            status: fcUtils.select('#fc-status').checked
         });
+        spinner.style.visibility = 'hidden';
+        toastr.success(fcUtils.translate('main.messages.successSave'));
     });
 });
 
@@ -73,7 +115,7 @@ window.on('resize', function() {
     if (850 > window.innerWidth) {
         return;
     }
-    const sidePanel = select('#fc-side-panel');
+    const sidePanel = fcUtils.select('#fc-side-panel');
     sidePanel.removeAttribute('style');
 });
 
@@ -81,11 +123,11 @@ function stickySidePanel() {
     if (850 > window.innerWidth) {
         return;
     }
-    const sidePanel = select('#fc-side-panel');
-    const sidePanelHook = select('#fc-side-panel-hook');
+    const sidePanel = fcUtils.select('#fc-side-panel');
+    const sidePanelHook = fcUtils.select('#fc-side-panel-hook');
     const docOffsetTop = document.documentElement.scrollTop || document.body.scrollTop;
-    const wpAdminBar = select('#wpadminbar');
-    const wpFooter = select('#wpfooter');
+    const wpAdminBar = fcUtils.select('#wpadminbar');
+    const wpFooter = fcUtils.select('#wpfooter');
     
     if (docOffsetTop > sidePanel.offsetTop) {
         sidePanel.style.position = 'fixed';
@@ -101,7 +143,7 @@ function stickySidePanel() {
 }
 
 function populateSidePanel(title, content, bottom = '') {
-    const sidePanel = select('#fc-side-panel');
+    const sidePanel = fcUtils.select('#fc-side-panel');
     sidePanel.innerHTML = `
     <h2>
         <span>${title}</span>
@@ -116,28 +158,11 @@ function populateSidePanel(title, content, bottom = '') {
 }
 
 function emptySidePanel() {
-    const sidePanel = select('#fc-side-panel');
+    const sidePanel = fcUtils.select('#fc-side-panel');
     sidePanel.style.display = 'none';
     sidePanel.innerHTML = '';
 
     window.off('scroll', stickySidePanel);
-}
-
-function manageBoxing(type = 'box') {
-    const toSend = [];
-    formacopoeia.currentForm.forEach(function(field) {
-        const tempField = {...field};
-        const currentField = getFieldByType(field.type);
-        tempField.props = {...field.props};
-        for (let prop in currentField.options.props) {
-            const currentProperty = getPropertyByName(currentField.options.props[prop].type);
-            if (currentProperty[type]) {
-                tempField.props[prop] = currentProperty[type](tempField.props[prop])
-            }  
-        }
-        toSend.push(tempField);
-    });
-    return toSend;
 }
 
 function getFieldByType(type) {
@@ -158,15 +183,4 @@ function getThemeByName(name) {
 
 function getPropertyByName(name) {
     return formacopoeia.properties[name];
-}
-
-function guidGenerator() {
-    var S4 = function() {
-       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-    };
-    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
-}
-
-function translate(key) {
-    return formacopoeia.translations[key] || key;
 }

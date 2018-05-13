@@ -1,84 +1,88 @@
-const select = function(selector, ancestor) {
-    if (!ancestor) {
-        ancestor = document;
-    }
-    return ancestor.querySelector(selector);
-};
+// console.log(fcUtils);
 
-const selectAll = function(selector, ancestor) {
-    if (!ancestor) {
-        ancestor = document;
-    }
-    return ancestor.querySelectorAll(selector);
-};
 
-HTMLElement.prototype.on = Node.prototype.on = window.on = function(name, fn) {
-    this.addEventListener(name, fn);
-};
+// fcUtils.select = function(selector, ancestor) {
+//     if (!ancestor) {
+//         ancestor = document;
+//     }
+//     return ancestor.querySelector(selector);
+// };
 
-Node.prototype.off = window.off = function(name, fn) {
-    this.removeEventListener(name, fn);
-};
+// fcUtils.selectAll = function(selector, ancestor) {
+//     if (!ancestor) {
+//         ancestor = document;
+//     }
+//     return ancestor.querySelectorAll(selector);
+// };
 
-Node.prototype.remove = function() {
-    this.parentNode.removeChild(this);
-};
+// if (fcUtils) {
+//     console.log(fcUtils.select('#wpwrap'));
+    
+// }
 
-NodeList.prototype.__proto__ = Array.prototype;
+// HTMLElement.prototype.on = Node.prototype.on = window.on = function(name, fn) {
+//     this.addEventListener(name, fn);
+// };
 
-NodeList.prototype.on = NodeList.prototype.addEventListener = function(name, fn) {
-    this.forEach(function(item) {
-        item.on(name, fn);
-    });
-};
+// Node.prototype.off = window.off = function(name, fn) {
+//     this.removeEventListener(name, fn);
+// };
 
-NodeList.prototype.off = NodeList.prototype.removeEventListener = function(name, fn) {
-    this.forEach(function(item) {
-        item.off(name, fn);
-    });
-};
+// Node.prototype.remove = function() {
+//     this.parentNode.removeChild(this);
+// };
 
-function toArray(object) {
-    return [].slice.call(object);
-}
+// NodeList.prototype.__proto__ = Array.prototype;
 
-const domReady = function(callback, target) {
-    if (!target) {
-        target = window;
-    }
-    target.addEventListener('DOMContentLoaded', callback);
-};
+// NodeList.prototype.on = NodeList.prototype.addEventListener = function(name, fn) {
+//     this.forEach(function(item) {
+//         item.on(name, fn);
+//     });
+// };
 
-if (!Element.prototype.matches) {
-    Element.prototype.matches = Element.prototype.msMatchesSelector || 
-                                Element.prototype.webkitMatchesSelector;
-}
+// NodeList.prototype.off = NodeList.prototype.removeEventListener = function(name, fn) {
+//     this.forEach(function(item) {
+//         item.off(name, fn);
+//     });
+// };
 
-if (!Element.prototype.closest) {
-    Element.prototype.closest = function(s) {
-        var el = this;
-        if (!document.documentElement.contains(el)) return null;
-        do {
-            if (el.matches(s)) return el;
-            el = el.parentElement || el.parentNode;
-        } while (el !== null); 
-        return null;
-    };
-}
+// fcUtils.domReady = function(callback, target) {
+//     if (!target) {
+//         target = window;
+//     }
+//     target.addEventListener('DOMContentLoaded', callback);
+// };
 
-(function() {
-    if ('function' === typeof window.CustomEvent) {
-        return false;
-    }
+// if (!Element.prototype.matches) {
+//     Element.prototype.matches = Element.prototype.msMatchesSelector || 
+//                                 Element.prototype.webkitMatchesSelector;
+// }
+
+// if (!Element.prototype.closest) {
+//     Element.prototype.closest = function(s) {
+//         var el = this;
+//         if (!document.documentElement.contains(el)) return null;
+//         do {
+//             if (el.matches(s)) return el;
+//             el = el.parentElement || el.parentNode;
+//         } while (el !== null); 
+//         return null;
+//     };
+// }
+
+// (function() {
+//     if ('function' === typeof window.CustomEvent) {
+//         return false;
+//     }
   
-    function CustomEvent(event, params) {
-        params = params || {bubbles: false, cancelable: false, detail: undefined};
-        var evt = document.createEvent( 'CustomEvent' );
-        evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-        return evt;
-    }
+//     function CustomEvent(event, params) {
+//         params = params || {bubbles: false, cancelable: false, detail: undefined};
+//         var evt = document.createEvent( 'CustomEvent' );
+//         evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+//         return evt;
+//     }
   
-    CustomEvent.prototype = window.Event.prototype;
+//     CustomEvent.prototype = window.Event.prototype;
   
-    window.CustomEvent = CustomEvent;
-})();
+//     window.CustomEvent = CustomEvent;
+// })();

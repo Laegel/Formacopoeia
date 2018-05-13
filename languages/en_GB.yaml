@@ -4,6 +4,8 @@ main:
   save: Save
   publish: Publish
   active: Active
+  messages:
+    successSave: Form has been saved!
 menu:
   list: Forms
   edit: Create form
@@ -16,7 +18,9 @@ editor:
   content: Build your form
   classes: Classes to add to your form
   theme: Select a theme
-  reset: Reset sandbox
+  rebuild: Rebuild form
+  messages:
+    fieldMissing: Missing field "{{fieldName}}"
 redirection: Link to redirect to
 pageReload: Reload the page
 fieldProperties: Field properties
@@ -24,8 +28,18 @@ tabs:
   editor: Editor
   options: Options
   behaviours: Behaviours
+  after: After validation
 behaviours:
-  title: Behaviours
+  messages:
+    updated: Behaviour updated
+  title: Add a behaviour
+  description: Do not forget to save your behaviours everytime you update them.
+  list: Saved behaviours
+  mail:
+    subject: Subject
+    sender: Sender
+    recipient: Recipient
+    message: Message
 categories:
   default: Default
 properties:
@@ -44,3 +58,5 @@ fields:
   radio: Radio
   textarea: Textarea
   file: File
+after:
+  action: After validation

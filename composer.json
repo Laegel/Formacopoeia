@@ -10,5 +10,9 @@
         "psr-4": {
             "Formacopoeia\\": "src/"
         }
+    },
+    "require-dev": {
+        "codeception/codeception": "^2.4",
+        "lucatume/wp-browser": "^1.24"
     }
 }

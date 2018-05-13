@@ -8,20 +8,20 @@ class Translator {
     private static $translations = [];
 
     public static function init() {
-        self::$translations = Yaml::parseFile(WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'formacopoeia' . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEPARATOR . get_locale() . '.yaml');
+        self::$translations = Yaml::parseFile(\Formacopoeia\Plugin::$dir . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEPARATOR . get_locale() . '.yaml');
     }
 
-    public static function _t($string, $data = []) {
-        echo self::translate($string, $data);
+    public static function _t($key, $data = []) {
+        echo self::translate($key, $data);
     }
 
-    public static function t($string, $data = []) {
-        return self::translate($string, $data);
+    public static function t($key, $data = []) {
+        return self::translate($key, $data);
     }
 
-    public static function translate($string, $data = []) {
-        $value = self::recursive_string_to_array(self::$translations, $string);
-        return $value ? $value : $string;
+    public static function translate($key, $data = []) {
+        $value = self::recursive_string_to_array(self::$translations, $key);
+        return $value ? $value : $key;
     }
 
     private static function recursive_string_to_array($data, $key) {
