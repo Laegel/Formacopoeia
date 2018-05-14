@@ -171,7 +171,7 @@
             if (!property) {
                 console.log(property + ' does not exist');
             }
-            var newId = guidGenerator();
+            var newId = fcUtils.guidGenerator();
             propertiesString += '<div class="fc-property-row"><label>' + fcUtils.translate('properties.' + prop) + '</label>' + '<property-wrapper data-name="' + prop + '" data-property="' + field.options.props[prop].type + '" data-id="' + newId + '">' + this.renderTemplate('property', field.options.props[prop].type, { prop: prop, value: value }) + '</property-wrapper></div>';
             propertiesEvents.push(newId);
         }
@@ -185,7 +185,7 @@
         if (indexOfField < formacopoeia.currentForm.fields.length - 1) {
             bottomSidePanel += '<span id="fc-move-down" class="button dashicons dashicons-arrow-down-alt"></span>';
         }
-        populateSidePanel(translate('fieldProperties'), propertiesString, bottomSidePanel);
+        populateSidePanel(fcUtils.translate('fieldProperties'), propertiesString, bottomSidePanel);
         var initPropertyField = function (wrapper) {
             var object = getPropertyByName(wrapper.dataset.property);
             if (object.onInit) {
@@ -283,7 +283,7 @@
         });
         fcUtils.toArray(newFieldLinks).forEach(function (item) {
             item.on('click', function (e) {
-                var id = guidGenerator();
+                var id = fcUtils.guidGenerator();
                 var realTarget = e.target.closest('a.fc-new-field');
                 var field = getFieldByType(realTarget.dataset.field);
                 form.innerHTML += _this.draggifyField(_this.renderTemplate('field', realTarget.dataset.field, {}), id);
